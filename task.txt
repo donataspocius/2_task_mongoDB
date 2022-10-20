@@ -1,0 +1,35 @@
+General Užduotis paskaitai (ir jei nespėjat savaitgaliui)
+
+Sukurkite expres.js ir MongoDB BE aplikaciją, kuri leis registruoti vaikus (kids) ir būrelius (activities).
+
+ 
+Duomenų bazėje turite turėti dvi kolekcijas
+- kids (duomenys)
+-- _id (sugenruos MongoDB)
+-- name (string)
+-- surname (string)
+-- age (number)
+
+
+- activities
+-- _id (sugeneruos MongoDB)
+-- activity_name (string)
+-- kids (array, kurio viduje bus talpinami vaiku _id)
+
+
+BE endpoins
++GET /kids - grąžina visus vaikus (masyve, kaip obejktus)
+---> GET /kids/:id - grąžina vaiką ir informaciją apie jį (name, surname, age IR jo lankomi būreliai, kaip string masyve)
++POST /kids - prideda vieną vaiką
++PUT / kids/:id - atnaujina vaiką pagal id
++DELETE /kids/:id - panaikina viena vaiką
+
+ 
+GET /activities - gražina visus būrelius ir vaikus (masyve, kaip objektai su name, surname ir age) priskirtus tam būreliui
+POST /activities - prideda būrelį
+PUT /activities/:id - atnaujina būrelį pagal id
+DELETE /activities/:id - panaikina būrelį pagal id
+
+
+POST /activities/kid - prideda vaiką prie būrelio
+DELETE /activities/kid/:id - panaikina vaiką iš būrelio pagal id
