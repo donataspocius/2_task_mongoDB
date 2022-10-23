@@ -13,6 +13,13 @@ const kidSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  activities: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "activity",
+      default: [],
+    },
+  ],
 });
 
 const Kid = mongoose.model("kid", kidSchema);

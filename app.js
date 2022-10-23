@@ -24,9 +24,11 @@ mongoose
 app.get("/kids", async (req, res) => {
   let kids;
   if (req.query.limit) {
-    kids = await Kid.find().limit(req.query.limit);
+    kids = await Kid.find()
+      .populate("activities", "activity_name")
+      .limit(req.query.limit);
   } else {
-    kids = await Kid.find();
+    kids = await Kid.find().populate("activities", "activity_name");
   }
   res.json(kids);
 });
@@ -39,15 +41,16 @@ app.get("/kids/:id", async (req, res) => {
     return res.status(404).json({ message: `No kid with id ${id}` });
   }
 
+  console.log();
   try {
-    const kid = await Kid.findById(id);
+    const kid = await Kid.findById(id).populate("activities", "activity_name");
     res.status(200).json(kid);
   } catch (error) {
     res.status(500).json({ message: `Server error: ${error}` });
   }
 });
 
-// POST /kids --> add kid
+// POST /kids --> create a kid
 app.post("/kids", async (req, res) => {
   try {
     const isDataValid = new Kid(req.body);
@@ -83,6 +86,113 @@ app.delete("/kids/:id", async (req, res) => {
     res.status(200).json({ message: `id ${id} data deleted successfuly` });
   } catch (error) {
     res.status(500).json({ message: `Server error: ${error.message}` });
+  }
+});
+
+// ACTIVITES ROUTS
+// GET all /activities
+app.get("/activities", async (req, res) => {
+  const allActivities = await Activity.find().populate("kids", "name surname");
+
+  res.status(200).json(allActivities);
+});
+
+// POST --> create /activities
+app.post("/activities", async (req, res) => {
+  try {
+    const isActivityValid = new Activity(req.body);
+    const savedActivity = await isActivityValid.save();
+
+    res.status(201).json(savedActivity);
+  } catch (error) {
+    res.status(404).json({ message: `Error creating activity: ${error}` });
+  }
+});
+
+// PUT --> update activity by id
+app.put("/activities/:id", async (req, res) => {
+  const id = req.params.id;
+  const updateData = req.body;
+
+  if (id.length !== 24) {
+    return res.status(404).json({ message: `No activity with id ${id}` });
+  }
+
+  try {
+    const activity = await Activity.findByIdAndUpdate(id, updateData).populate(
+      "kids",
+      "name surname"
+    );
+    res.status(200).json(activity);
+  } catch (error) {
+    res.status(404).json({ message: `Error updating activity: ${error}` });
+  }
+});
+
+// DELETE activity by id
+app.delete("/activities/:id", async (req, res) => {
+  const id = req.params.id;
+
+  if (id.length !== 24) {
+    return res.status(404).json({ message: `No activity with id ${id}` });
+  }
+
+  try {
+    const testDeleted = await Activity.findByIdAndDelete(id);
+    if (testDeleted) {
+      res.status(200).json({ message: `Activity successfully deleted` });
+    } else {
+      return res.status(404).json({ message: `No activity with id ${id}` });
+    }
+  } catch (error) {
+    res.status(404).json({ message: `Error deleting activity: ${error}` });
+  }
+});
+
+// TWO COLLECTIONS ROUTES
+// POST add kid to activity
+app.post("/activities/kid", async (req, res) => {
+  try {
+    const activityId = req.body.activityId;
+    const kidId = req.body.kidId;
+    const kid = await Kid.findById(kidId);
+    const activity = await Activity.findById(activityId);
+    const kidActivitiesArray = kid.activities;
+    const activityKidsArray = activity.kids;
+
+    if (!kidActivitiesArray.includes(activityId)) {
+      kidActivitiesArray.push(activityId);
+      kid.save();
+      activityKidsArray.push(kidId);
+      activity.save();
+
+      res.json({ message: "successfully added kid to activity" });
+    } else {
+      res.json({ message: "Kid already listed in this activity" });
+    }
+  } catch (error) {
+    res.status(404).json({ message: `Error adding kid to activity: ${error}` });
+  }
+});
+
+app.delete("/activities/kid/:id", async (req, res) => {
+  const id = req.params.id;
+  const activityId = req.body.activityId;
+
+  try {
+    const activities = await Activity.findById(activityId);
+    const index = activities.kids.indexOf(id);
+
+    if (index !== -1) {
+      activities.kids.splice(index, 1);
+      activities.save();
+    } else {
+      res.json({ message: "No such kid in this activity" });
+    }
+  } catch (error) {
+    res
+      .status(404)
+      .json({ message: `Error deleting kid from activity: ${error}` });
   }
 });
 

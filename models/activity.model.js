@@ -5,11 +5,12 @@ const activitySchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  kids: {
-    type: Array,
-    required: true,
-    default: [],
-  },
+  kids: [
+    // {
+    //   type: mongoose.Types.ObjectId,
+    //   ref: "kid",
+    // },
+  ],
 });
 
 const Activity = mongoose.model("activity", activitySchema);

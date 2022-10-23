@@ -19,17 +19,17 @@ Duomenų bazėje turite turėti dvi kolekcijas
 
 BE endpoins
 +GET /kids - grąžina visus vaikus (masyve, kaip obejktus)
----> GET /kids/:id - grąžina vaiką ir informaciją apie jį (name, surname, age IR jo lankomi būreliai, kaip string masyve)
++GET /kids/:id - grąžina vaiką ir informaciją apie jį (name, surname, age IR jo lankomi būreliai, kaip string masyve)
 +POST /kids - prideda vieną vaiką
 +PUT / kids/:id - atnaujina vaiką pagal id
 +DELETE /kids/:id - panaikina viena vaiką
 
  
-GET /activities - gražina visus būrelius ir vaikus (masyve, kaip objektai su name, surname ir age) priskirtus tam būreliui
-POST /activities - prideda būrelį
-PUT /activities/:id - atnaujina būrelį pagal id
-DELETE /activities/:id - panaikina būrelį pagal id
++GET /activities - gražina visus būrelius ir vaikus (masyve, kaip objektai su name, surname ir age) priskirtus tam būreliui
++POST /activities - prideda būrelį
++PUT /activities/:id - atnaujina būrelį pagal id
++DELETE /activities/:id - panaikina būrelį pagal id
 
 
-POST /activities/kid - prideda vaiką prie būrelio
++POST /activities/kid - prideda vaiką prie būrelio
 DELETE /activities/kid/:id - panaikina vaiką iš būrelio pagal id
